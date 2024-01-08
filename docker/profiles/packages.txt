@@ -1,0 +1,5 @@
+sudo
+ca-certificates
+deepin-keyring
+apt
+neofetch
