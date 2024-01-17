@@ -3,6 +3,10 @@ services:
   v23:
     image: deepin:v23
     container_name: v23
+    hostname: test
+    privileged: true # 以特权模式运行
+    volumes:
+      - /proc:/proc
     tty: true
     stdin_open: true
     restart: always
