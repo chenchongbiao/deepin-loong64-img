@@ -1,0 +1,14 @@
+ca-certificates
+deepin-keyring
+locales
+sudo
+zsh
+vim
+git
+devscripts
+initramfs-tools
+grub2-common
+grub-efi-loong64-bin
+network-manager
+systemd-timesyncd
+ssh

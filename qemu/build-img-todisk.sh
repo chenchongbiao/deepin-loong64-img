@@ -8,7 +8,7 @@ sudo apt update
 export DEBIAN_FRONTEND=noninteractive
 ARCH="loong64"
 DISKIMG="deepin-beige-$ARCH.img"
-IMGSIZE="60G"
+IMGSIZE="40G"
 ROOTFS=`mktemp -d`
 dist_version="beige"
 dist_name="deepin"
@@ -19,15 +19,7 @@ PACKAGES=`cat $PACKAGES_FILE | grep -v "^-" | xargs | sed -e 's/ /,/g'`
 
 sudo apt update -y && sudo apt install -y curl git mmdebstrap usrmerge systemd-container
 
-DEV="/dev/nbd0"
-# 加载 nbd 模块，允许创建的最大分区数为16
-sudo modprobe nbd max_part=16
-sudo qemu-nbd -d $DEV
-rm $DISKIMG || true
-
-qemu-img create -f qcow2 -o size=$IMGSIZE $DISKIMG
-# QEMU 镜像文件连接到一个 NBD 设备
-sudo qemu-nbd -c $DEV $DISKIMG
+DEV="/dev/sda"
 
 # n # 新建分区
 # p # 主分区
@@ -54,26 +46,33 @@ sudo qemu-nbd -c $DEV $DISKIMG
 # w
 # EOF
 
-sudo gdisk $DEV << EOF
-n
-1
 
-+300M
-ef00
-n
-2
+# ----------------------------------------------------
+# sudo gdisk $DEV << EOF
+# o
+# y
+# n
+# 1
+
+# +300M
+# ef00
+# n
+# 2
 
 
 
-w
-y
-EOF
+# w
+# y
+# EOF
+# ----------------------------------------------------
+
 
 # 分区创建完毕后，记得格式化新分区（此处假设是EFI系统分区，用fat32格式）
-sudo mkfs.fat -F32 "${DEV}p1"
-sudo mkfs.ext4 "${DEV}p2" # 根分区 (/)
+# sudo mkfs.fat -F32 "${DEV}1"
+# root_uuid=$(sudo mkfs.ext4 "${DEV}2" | grep "Filesystem" | awk -F ': ' '{print $2}') # 根分区 (/)
 
-sudo mount "${DEV}p2" $ROOTFS
+# sudo umount $root_uuid
+sudo mount "${DEV}2" $ROOTFS
 # sudo rm -rf $ROOTFS/lost+found
 
 sudo mmdebstrap \
@@ -94,7 +93,7 @@ sudo mount -t proc none $ROOTFS/proc
 sudo mount -t sysfs none $ROOTFS/sys
 
 sudo mkdir -p $ROOTFS/boot/efi
-sudo mount "${DEV}p1" $ROOTFS/boot/efi
+sudo mount "${DEV}1" $ROOTFS/boot/efi
 sudo cp -r config/efi/* $ROOTFS/boot/efi
 
 sudo mkdir -p $ROOTFS/boot/grub
