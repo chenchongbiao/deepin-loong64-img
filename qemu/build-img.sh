@@ -8,6 +8,7 @@ set -o nounset
 ROOTFS=`mktemp -d`
 TARGET_DEVICE="qemu"
 TARGET_ARCH="loong64"
+DIST_VERSION="beige"
 DISKSIZE="60G"
 DISKIMG="deepin-$TARGET_DEVICE-$TARGET_ARCH.qcow2"
 readarray -t REPOS < ./profiles/sources.list
@@ -16,20 +17,20 @@ PACKAGES=`cat ./profiles/packages.txt | grep -v "^-" | xargs | sed -e 's/ /,/g'`
 sudo apt update -y
 sudo apt-get install -y qemu-user-static binfmt-support mmdebstrap arch-test usrmerge usr-is-merged qemu-system-misc systemd-container
 
-# 创建根文件系统
-# sudo mmdebstrap \
-#     --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
-#     --include=$PACKAGES \
-#     --architectures=$TARGET_ARCH $COMPONENTS \
-#     --customize=./profiles/stage2.sh \
-#     $ROOTFS \
-#     "${REPOS[@]}"
-
-sudo mmdebstrap --arch=$TARGET_ARCH --variant=buildd \
+# sudo mmdebstrap --arch=$TARGET_ARCH --variant=buildd \
+#         --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
+#         --include=$PACKAGES \
+#         --customize=./profiles/stage2.sh \
+#         beige $ROOTFS\
+#         "${REPOS[@]}"
+sudo mmdebstrap \
         --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
         --include=$PACKAGES \
-        --customize=./profiles/stage2.sh \
-        beige $ROOTFS\
+        --components="main,commercial,community" \
+        --architectures=$TARGET_ARCH \
+        --customize=./config/hooks.chroot/second-stage \
+        $DIST_VERSION \
+        $ROOTFS \
         "${REPOS[@]}"
 
 sudo echo "deepin-$TARGET_ARCH-$TARGET_DEVICE" | sudo tee $ROOTFS/etc/hostname > /dev/null

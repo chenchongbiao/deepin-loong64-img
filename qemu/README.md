@@ -37,10 +37,9 @@ sudo qemu-system-loongarch64 -nographic -machine virt -m 4G \
     -object rng-random,filename=/dev/urandom,id=rng0 \
     -append "console=ttyS0 rw root=/dev/vda1" \
     -device virtio-blk-pci,drive=hd0 \
-    -device virtio-net-pci,netdev=usernet \
     -drive file=deepin-qemu-loong64.qcow2,format=qcow2,id=hd0,if=none \
     -net nic,model=virtio \
-    -netdev user,id=usernet,hostfwd=tcp::2222-:22
+    -device virtio-net-pci,netdev=usernet -netdev user,id=usernet,hostfwd=tcp::2222-:22
 ```
 
 在 virt-manager 配置内核启动
