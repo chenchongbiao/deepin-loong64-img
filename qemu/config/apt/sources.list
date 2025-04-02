@@ -1,2 +1,2 @@
 deb https://community-packages.deepin.com/beige/ beige main commercial community
-deb [trusted=yes] https://ci.deepin.com/repo/obs/deepin:/stable:/main:/grub2/stable/ ./
+deb https://proposed-packages.deepin.com/beige-testing/ unstable/25 main commercial community

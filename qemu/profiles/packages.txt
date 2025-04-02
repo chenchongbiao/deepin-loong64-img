@@ -1,9 +1,0 @@
-sudo
-ca-certificates
-deepin-keyring
-apt
-neofetch
-xz-utils
-linux-image-loong64
-net-tools
-network-manager
